@@ -2,8 +2,8 @@ function juegoAhorcadoConsola() {
     // Variables globales
     const expresionRegularLetras = /[^a-záéíóúÁÉÍÓÚ]/; // ^ indica negación de las letras del abecedario comunes.
     const expresionRegularEspacios = /\s/;             // Busca espacios en blanco en una cadena
-    let intentos = 0;
     let letrasUsadas = [];
+    let letrasFalladas = [];
     let palabra = "";
 
     // Variables de estadísticas
@@ -11,38 +11,47 @@ function juegoAhorcadoConsola() {
     let partidasGanadas = 0;
     let partidasPerdidas = 0;
 
+    // ########################################################## JUEGO ###############################################################################
+
     document.write("<h1>Ahorcado</h1><br>Atento a la consola!</br>");
-    console.log('1. Iniciar el juego\n2. Estadísticas\n3. Salir');
+    console.log('1. Iniciar el juego\n2. Estadísticas\n3. Salir');  // document.write()
     // El usuario elige una de las 3 opciones
-    let opcionJuego = prompt('Elige qué quieres hacer a continuación:');
+    let opcionJuego = prompt('Elige qué quieres hacer a continuación:').toLowerCase();
 
     // Comprobamos la opción introducida
-    while (opcionJuego != '3') {
-        if (opcionJuego.length != 1 || opcionJuego < 1 || opcionJuego > 2) {
-            console.log(`${opcionJuego} no es una opción vaĺida. Introduce otro número.`);
-            opcionJuego = prompt('Elige una opción válida');
-        }
-        // Opción 1: iniciar el juego
+    while (true) {
         if (opcionJuego == '1') {
             console.log('Comienza el juego!');
+            partidasJugadas++;
             iniciarJuego();
+        } else if (opcionJuego == '2') {
+            console.log(estadisticas());
+        } else if (opcionJuego == '3') {
+            break;
+        } else {
+            console.log(`${opcionJuego} no es una opción vaĺida. Introduce un número.`);
+            opcionJuego = prompt('Elige una opción válida');
         }
-        break;
 
+        reiniciarPartida();
+        console.log('1. Jugar otra vez\n2. Estadísticas\n3. Salir');  // document.write()
+        opcionJuego = prompt('Elige qué quieres hacer a continuación:').toLowerCase();
     }
+
     console.log('Has salido del juego');
-    // document.write("<br><button>Jugar otra vez</button>");
+
+    // ########################################################## FUNCIONES ############################################################################
 
     function iniciarJuego() {
-        while (intentos < 6) {
-            palabra = prompt('Introduce una sola palabra:').toLowerCase();
-            intentos++;
-            while (!compruebaPalabra(palabra)) {
-                console.log('Palabra no válida. Asegúrate de introducir una única palabra y que solo contenga letras.');
-                palabra = prompt('Introduce otra palabra:').toLowerCase();
-            }
-            palabraEncriptada(palabra);    
+        palabra = prompt('Introduce una sola palabra:').toLowerCase();
+        while (!compruebaPalabra(palabra)) {
+            console.log('Palabra no válida. Asegúrate de introducir una única palabra y que solo contenga letras.');
+            palabra = prompt('Introduce otra palabra:').toLowerCase();
+        }
+        let palabraOculta = palabraEncriptada(palabra);
+        console.log(palabraOculta); // En modo gráfico poner document.write();
 
+        while (true) {
             let letra = prompt('Introduce una letra:').toLowerCase();
             while (!compruebaLetraValida(letra)) {
                 console.log('Carácter inválido');
@@ -51,16 +60,23 @@ function juegoAhorcadoConsola() {
 
             letrasUsadas.push(letra);
             if (compruebaLetraCorrecta(letra)) {
-                muestraResultado();
                 if (compruebaSiGana()) {
+                    muestraResultado();
                     console.log('Enhorabuena, has acertado la palabra!');
-                    break;
+                    partidasGanadas++;
+                    return;
+                }
+            } else {
+                letrasFalladas.push(letra);
+                if (letrasFalladas.length == 6) {
+                    muestraResultado();
+                    console.log(`Se te han acabado los intentos, has muerto\nLa palabra era ${palabra.toUpperCase()}`);
+                    partidasPerdidas++;
+                    return;
                 }
             }
-
-
+            muestraResultado();
         }
-
     }
     function compruebaPalabra(palabra) {
         if (expresionRegularEspacios.test(palabra)) return false;
@@ -68,19 +84,20 @@ function juegoAhorcadoConsola() {
         return true;
     }
     function palabraEncriptada(palabra) {
+        let palabraEncriptada = '';
         for (let i=0; i<palabra.length; i++) {
-            for (let j=0; j<letrasUsadas.length; j++) {
-                if (palabra.charAt(i) == letrasUsadas[j]) {
-                    console.log(palabra.charAt(i));
-                } else {
-                    console.log('_');
-                }
+            if (letrasUsadas.includes(palabra.charAt(i))) {
+                palabraEncriptada = palabraEncriptada + palabra.charAt(i) + ' ';
+            } else {
+                palabraEncriptada = palabraEncriptada + '_ ';
             }
         }
+        return palabraEncriptada;
     }
     function compruebaLetraValida(letra) {
         if (letra.length != 1) return false;
         if (expresionRegularLetras.test(letra)) return false; // comprueba si la letra es diferente (^) a alguno de los carácteres de la expresión regular.
+        if (letrasUsadas.includes(letra)) return false;
         return true;
     }
     function compruebaLetraCorrecta(letra) {
@@ -88,12 +105,24 @@ function juegoAhorcadoConsola() {
         return false;
     }
     function muestraResultado() {
-        palabraEncriptada(palabra);
-        console.log(intentos);
+        console.log(palabraEncriptada(palabra));    // document.write();
+        console.log(`Letras falladas: ${letrasFalladas.length}/6: ` + letrasFalladas);
     }
     function compruebaSiGana() {
-        let letrasUsadasCadena = letrasUsadas.join('');
-        if (letrasUsadasCadena == palabra) return true;
+        let palabraOculta = palabraEncriptada(palabra).split(' ').join('');
+        if (palabraOculta == palabra) return true;
         return false;
+    }
+    function estadisticas() {
+        let victorias = (partidasGanadas * 100) / partidasJugadas;
+        let derrotas = (partidasPerdidas * 100) / partidasJugadas;
+        if (Number.isNaN(victorias)) victorias = '0';
+        if (Number.isNaN(derrotas)) derrotas = '0';
+        return `Total de partidas: ${partidasJugadas}\nPartidas ganadas(${victorias}%): ${partidasGanadas}\nPartidas perdidas(${derrotas}%): ${partidasPerdidas}`;
+    }
+    function reiniciarPartida() {
+        letrasUsadas = [];
+        letrasFalladas = [];
+        palabra = '';
     }
 }
