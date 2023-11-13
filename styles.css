@@ -1,0 +1,22 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.juego-ahorcado {
+    margin: 1.5em;
+}
+.boton {
+    padding: 1em;
+    color: white;
+    border: 0px;
+    border-radius: 10px;
+}
+.iniciar {
+    background-color: rgb(102, 102, 236);
+}
+.estad {
+    background-color: rgb(0, 223, 0);
+}
