@@ -8,14 +8,20 @@
     <link rel="stylesheet" href="styles.css" type="text/css">
 </head>
 <body>
-    <button onclick="juegoAhorcadoConsola()">Juega en consola</button>
-    
-    <div id="juego-ahorcado">
-        <button class="boton iniciar" onclick="juegoAhorcadoGrafico()">Iniciar partida</button>
-        <button class="boton estad">Estadísticas</button>
+    <div class="modos-de-juego">
+        <div class="modo-consola">
+            <button onclick="juegoAhorcadoConsola()">Juega en consola</button>
+        </div>
+        <div class="modo-grafico">
+            <div id="juego-ahorcado">
+                <button class="boton iniciar" onclick="juegoAhorcadoGrafico()">Iniciar partida</button>
+                <button class="boton estad">Estadísticas</button>
+            </div>
+            <div id="abc"></div>
+            <img src="img/penjat_0.png" id="imagenJuego" />
+            <div id="letrasUsadas"></div>
+        </div>
+
     </div>
-    <div id="abc"></div>
-    <img src="" id="imagenJuego" />
-    <div id="letrasUsadas"></div>
 </body>
 </html>

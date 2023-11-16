@@ -1,22 +1,61 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
-.juego-ahorcado {
-    margin: 1.5em;
+.modos-de-juego {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.modo-consola {
+    width: 100vw;
+    height: 5vh;
+    text-align: center;
+}
+
+.modo-grafico {
+    width: 100vw;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+#juego-ahorcado {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
 }
 .boton {
     padding: 1em;
     color: white;
     border: 0px;
     border-radius: 10px;
+    margin: 1em;
 }
 .iniciar {
     background-color: rgb(102, 102, 236);
 }
 .estad {
     background-color: rgb(0, 223, 0);
+}
+
+
+/* Fondos para ubicarme */
+#abc {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#letrasUsadas {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
 }

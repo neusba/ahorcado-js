@@ -4,6 +4,7 @@ const expresionRegularEspacios = /\s/;             // Busca espacios en blanco e
 let letrasUsadas = [];
 let letrasFalladas = [];
 let palabra = "";
+let abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 // Variables globales de estadísticas
 let partidasJugadas = 0;
@@ -26,7 +27,7 @@ function juegoAhorcadoConsola() {
         if (opcionJuego == '1') {
             console.log('Comienza el juego!');
             partidasJugadas++;
-            iniciarJuego();
+            iniciarJuegoConsola();
         } else if (opcionJuego == '2') {
             console.log(estadisticas());
         } else if (opcionJuego == '3') {
@@ -50,12 +51,47 @@ function juegoAhorcadoConsola() {
 // Juego en modo gráfico
 
 function juegoAhorcadoGrafico() {
-    console.log('hola');
+    iniciarJuegoGrafico();
 }
 
 
 // ###################################################### FUNCIONES #####################################################################
-function iniciarJuego() {
+function iniciarJuegoGrafico() {
+    palabra = prompt('Introduce una sola palabra:').toLowerCase();
+    while (!compruebaPalabra(palabra)) {
+        alert('Palabra no válida. Asegúrate de introducir una única palabra y que solo contenga letras.');
+        palabra = prompt('Introduce otra palabra:').toLowerCase();
+    }
+    
+    muestraPalabraOculta();
+    creaAbecedario();
+}
+
+function pulsaLetra(letra) {
+    letrasUsadas.push(letra);
+    let botonLetra = document.getElementById(letra);
+    // botonLetra.style.backgroundColor = 'blue';
+    // botonLetra.disabled = true;
+    actualizaPalabraOculta();
+}
+function muestraPalabraOculta() {
+    let containerPalabra = document.getElementById('abc');
+    containerPalabra.innerHTML = `<h1 id="oculta">${palabraEncriptada(palabra)}</h1>`;
+}
+function actualizaPalabraOculta() {
+    let palabraOculta = document.getElementById('oculta');
+    palabraOculta.innerText = palabraEncriptada(palabra);
+}
+function creaAbecedario() {
+    let containerLetras = document.getElementById('letrasUsadas');
+    for (let i=0; i<abecedario.length; i++) {
+        let cajaLetra = document.createElement('div');
+        cajaLetra.innerHTML = `<button id="${abecedario.charAt(i)}" onclick="pulsaLetra('${abecedario.charAt(i)}')">${abecedario.charAt(i)}</button>`;
+        containerLetras.appendChild(cajaLetra);
+    }
+}
+
+function iniciarJuegoConsola() {
     palabra = prompt('Introduce una sola palabra:').toLowerCase();
     while (!compruebaPalabra(palabra)) {
         console.log('Palabra no válida. Asegúrate de introducir una única palabra y que solo contenga letras.');
