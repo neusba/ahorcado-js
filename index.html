@@ -5,9 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba evaluable: el ahorcado</title>
     <script src="js/ahorcado.js"></script>
+    <link rel="stylesheet" href="styles.css" type="text/css">
 </head>
 <body>
-    <button onclick="juegoAhorcadoConsola()">Juega en consola</button>
-    <button onclick="juegoAhorcadoGrafico()">Juega en modo gráfico</button>
+    <div class="modos-de-juego">
+        <div class="modo-consola">
+            <button onclick="juegoAhorcadoConsola()">Juega en consola</button>
+        </div>
+        <div class="modo-grafico">
+            <div id="juego-ahorcado">
+                <button class="boton iniciar" onclick="juegoAhorcadoGrafico()">Iniciar partida</button>
+                <button class="boton estad" onclick="muestraEstadisticas()">Estadísticas</button>
+                <button class="boton reiniciar" onclick="reiniciarEstadisticas()">Reiniciar Estadísticas</button>
+            </div>
+            <div id="abc">
+                <h1 id="oculta"></h1>
+            </div>
+            <img src="" id="imagenJuego" />
+            <div id="letrasUsadas"></div>
+            <div id="estad"></div>
+        </div>
+
+    </div>
 </body>
 </html>
