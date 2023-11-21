@@ -15,11 +15,15 @@
         <div class="modo-grafico">
             <div id="juego-ahorcado">
                 <button class="boton iniciar" onclick="juegoAhorcadoGrafico()">Iniciar partida</button>
-                <button class="boton estad">Estadísticas</button>
+                <button class="boton estad" onclick="muestraEstadisticas()">Estadísticas</button>
+                <button class="boton reiniciar" onclick="reiniciarEstadisticas()">Reiniciar Estadísticas</button>
             </div>
-            <div id="abc"></div>
-            <img src="img/penjat_0.png" id="imagenJuego" />
+            <div id="abc">
+                <h1 id="oculta"></h1>
+            </div>
+            <img src="" id="imagenJuego" />
             <div id="letrasUsadas"></div>
+            <div id="estad"></div>
         </div>
 
     </div>

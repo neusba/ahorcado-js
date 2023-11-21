@@ -1,5 +1,5 @@
 // Variables globales
-const expresionRegularLetras = /[^a-záéíóúÁÉÍÓÚ]/; // ^ indica negación de las letras del abecedario comunes.
+const expresionRegularLetras = /[^a-záéíóúÁÉÍÓÚA-Z]/; // ^ indica negación de las letras del abecedario comunes.
 const expresionRegularEspacios = /\s/;             // Busca espacios en blanco en una cadena
 let letrasUsadas = [];
 let letrasFalladas = [];
@@ -54,43 +54,103 @@ function juegoAhorcadoGrafico() {
     iniciarJuegoGrafico();
 }
 
-
-// ###################################################### FUNCIONES #####################################################################
 function iniciarJuegoGrafico() {
-    palabra = prompt('Introduce una sola palabra:').toLowerCase();
+    let containerEstad = document.getElementById('estad');
+    containerEstad.style.display = 'none';
+    partidasJugadas++;
+    palabra = prompt('Introduce una sola palabra:').toUpperCase();
     while (!compruebaPalabra(palabra)) {
         alert('Palabra no válida. Asegúrate de introducir una única palabra y que solo contenga letras.');
-        palabra = prompt('Introduce otra palabra:').toLowerCase();
+        palabra = prompt('Introduce otra palabra:').toUpperCase();
     }
-    
-    muestraPalabraOculta();
+    actualizaPalabraOculta();
+    cambiaImagen();
     creaAbecedario();
 }
 
+// ###################################################### FUNCIONES MODO GRÁFICO #####################################################################
 function pulsaLetra(letra) {
     letrasUsadas.push(letra);
-    let botonLetra = document.getElementById(letra);
-    // botonLetra.style.backgroundColor = 'blue';
-    // botonLetra.disabled = true;
+    cambiaColorLetra(letra);
     actualizaPalabraOculta();
-}
-function muestraPalabraOculta() {
-    let containerPalabra = document.getElementById('abc');
-    containerPalabra.innerHTML = `<h1 id="oculta">${palabraEncriptada(palabra)}</h1>`;
-}
-function actualizaPalabraOculta() {
-    let palabraOculta = document.getElementById('oculta');
-    palabraOculta.innerText = palabraEncriptada(palabra);
-}
-function creaAbecedario() {
-    let containerLetras = document.getElementById('letrasUsadas');
-    for (let i=0; i<abecedario.length; i++) {
-        let cajaLetra = document.createElement('div');
-        cajaLetra.innerHTML = `<button id="${abecedario.charAt(i)}" onclick="pulsaLetra('${abecedario.charAt(i)}')">${abecedario.charAt(i)}</button>`;
-        containerLetras.appendChild(cajaLetra);
+    if (sinIntentos()) {
+        partidasPerdidas++;
+        finJuego();
+        alert(`Has muerto :(`);
+        return;
+    } else if (compruebaSiGana()) {
+        partidasGanadas++;
+        finJuego();
+        alert('Has ganado!');
+        return;
     }
 }
+function actualizaPalabraOculta() {
+    let palabraOculta = document.getElementById('oculta');                  // Actualiza la palabra oculta descubriendo las letras acertadas
+    palabraOculta.innerText = palabraEncriptada(palabra);
+}
+function creaAbecedario() {                                                 // Genera el abecedario de letras en forma de botones para pulsar
+    let containerLetras = document.getElementById('letrasUsadas');
+    let cajasLetrasABC = '';
+    for (let i=0; i<abecedario.length; i++) {
+        cajasLetrasABC += `<button id="${abecedario.charAt(i)}" onclick=pulsaLetra('${abecedario.charAt(i)}')>${abecedario.charAt(i)}</button>`;
+    }
+    containerLetras.innerHTML = cajasLetrasABC;
+}
+function cambiaColorLetra(letra) {                                          // Cambia el color de las letras segun si son acertadas o erroneas
+    let botonLetra = document.getElementById(letra);
+    if (palabra.includes(letra)) {
+        botonLetra.style.backgroundColor = 'green';
+    } else {
+        botonLetra.style.backgroundColor = 'red';
+        letrasFalladas.push(letra);
+        cambiaImagen();
+    }
+    botonLetra.disabled = true;
+}
+function cambiaImagen() {
+    let nuevaRuta = `img/penjat_${letrasFalladas.length}.png`;              // Modifica la imagen principal del juego segun el número de fallos que lleva
+    let imagenActual = document.getElementById('imagenJuego');  
+    imagenActual.src = nuevaRuta;
+}   
+function sinIntentos() {                                                    // Comprueba si se ha quedado sin intentos
+    if (letrasFalladas.length == 6) {   
+        return true;
+    }
+    return false;
+}
+function finJuego() {                                                       // Acciones que ocurren cuando acaba el turno 
+    localStorage.setItem('Estadisticas', estadisticas());
+    for (let i=0; i<abecedario.length; i++) {
+        let botonLetra = document.getElementById(`${abecedario.charAt(i)}`);
+        botonLetra.disabled = true;
+    }
+    let containerPalabra = document.getElementById('oculta');
+    containerPalabra.innerText = palabra;
+    muestraEstadisticas();
+    reiniciarPartida();
+}
+function reiniciarEstadisticas() {                                          // Reinicia las estadísticas en cualquier momento de la sesión
+    localStorage.clear();
+    partidasGanadas = 0;
+    partidasJugadas = 0;
+    partidasPerdidas = 0;
+    muestraEstadisticas();
+}
+function muestraEstadisticas() {                                            // Muestra la estadísticas actuales de la partida
+    let containerEstad = document.getElementById('estad');
+    containerEstad.style.display = 'flex';
+    let estaddd = '';
+    if (localStorage.getItem('Estadisticas') == null) {
+        estaddd = 'No hay estadísticas para mostrar';
+    } else {
+        estaddd = localStorage.getItem('Estadisticas');
+    }
+    containerEstad.innerHTML = `<p>${estaddd}</p>`;
+}
 
+
+// ############################################## FUNCIONES MODO CONSOLA #########################################################################
 function iniciarJuegoConsola() {
     palabra = prompt('Introduce una sola palabra:').toLowerCase();
     while (!compruebaPalabra(palabra)) {
@@ -99,7 +159,7 @@ function iniciarJuegoConsola() {
     }
 
     let palabraOculta = palabraEncriptada(palabra);
-    console.log(palabraOculta); // En modo gráfico poner document.write();
+    console.log(palabraOculta);
 
     while (true) {
         let letra = prompt('Introduce una letra:').toLowerCase();
@@ -128,6 +188,7 @@ function iniciarJuegoConsola() {
         muestraResultado();
     }
 }
+
 function compruebaPalabra(palabra) {
     if (expresionRegularEspacios.test(palabra)) return false;
     if (expresionRegularLetras.test(palabra)) return false; // comprueba si la palabra contiene carácteres diferentes (^) a los de la expresión regular.
@@ -144,18 +205,18 @@ function palabraEncriptada(palabra) {
     }
     return palabraEncriptada;
 }
-function compruebaLetraValida(letra) {
+function compruebaLetraValida(letra) {                      // Comprueba si la letra introducida es un carácter válido para después comprobar si está en la palabra
     if (letra.length != 1) return false;
     if (expresionRegularLetras.test(letra)) return false; // comprueba si la letra es diferente (^) a alguno de los carácteres de la expresión regular.
     if (letrasUsadas.includes(letra)) return false;
     return true;
 }
-function compruebaLetraCorrecta(letra) {
+function compruebaLetraCorrecta(letra) {                    // comprueba si la letra es acertada en la palabra
     if (palabra.includes(letra)) return true;
     return false;
 }
 function muestraResultado() {
-    console.log(palabraEncriptada(palabra));    // document.write();
+    console.log(palabraEncriptada(palabra));    
     console.log(`Letras falladas ${letrasFalladas.length}/6: ` + letrasFalladas);
 }
 function compruebaSiGana() {
@@ -170,7 +231,7 @@ function estadisticas() {
     if (Number.isNaN(derrotas)) derrotas = '0';
     return `Total de partidas: ${partidasJugadas}\nPartidas ganadas(${victorias}%): ${partidasGanadas}\nPartidas perdidas(${derrotas}%): ${partidasPerdidas}`;
 }
-function reiniciarPartida() {
+function reiniciarPartida() {                               // Reinicia los datos para empezar una partida nueva
     letrasUsadas = [];
     letrasFalladas = [];
     palabra = '';
